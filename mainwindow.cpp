@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    /// Создает основное окно программы с размерами 360x320
+    /// В качестве основного компановщика используется QStackedLayout
     ui->setupUi(this);
     setFixedSize(360,320);
 

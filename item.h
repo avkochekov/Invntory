@@ -48,7 +48,7 @@ protected:
 signals:
     void created(int position, ItemType type);
     void increased(int position, ItemType type);
-    void appended(int start, int stop);
+    void merged(int start, int stop);
     void decreased(int position);
     void disappeared();
     void typeChanged();

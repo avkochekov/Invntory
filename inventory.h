@@ -17,12 +17,11 @@ class Inventory : public QTableWidget
     Q_OBJECT
 public:
     explicit Inventory(QWidget *parent = nullptr);
-    int createInventory(int rows, int cols);
 
     QByteArray getInventory();
 
 public slots:
-    int createInventory();
+    int createInventory(int rows, int cols);
     void setInventory(QByteArray inventory);
 
 
@@ -44,6 +43,7 @@ private slots:
     void increaseItem(int position, ItemType type);
     void decreaseItem(int position);
     void mergeItems(int start, int stop);
+    void updateItem(int position, QPair<ItemType, int>);
     void updateItem(int position, ItemType type, int count);
 
 public slots:
