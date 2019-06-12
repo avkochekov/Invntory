@@ -22,7 +22,6 @@ public:
 
 private:
     QWidget *getMainMenu();
-    QWidget *getConnectionMenu();
     QWidget *getPlayField();
 
 private:
