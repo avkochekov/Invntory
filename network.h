@@ -12,6 +12,7 @@ class Network : public QObject
 public:
     explicit Network();
     void sendMessage();
+    void disconnect();
 
 private:
     QTcpServer *server;

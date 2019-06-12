@@ -17,6 +17,13 @@ Network::Network()
     });
 }
 
+void Network::disconnect()
+{
+    /// Прерывает все ранее созданные соединения
+    socket->disconnectFromHost();
+    server->close();
+}
+
 void Network::serachServer()
 {
     /// Перебирает IP адреса локальной сети
