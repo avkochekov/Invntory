@@ -65,7 +65,7 @@ QWidget *MainWindow::getMainMenu()
                 QMessageBox msgBox(QMessageBox::Warning,
                                    "Новая игра",
                                    "Отсутствует игра для подключения.\n"
-                                   "Выберите другой режим игры или попробуейт подключиться еще раз.",
+                                   "Выберите другой режим игры или попробуйтe подключиться еще раз.",
                                    QMessageBox::Ok);
                 msgBox.exec();
             });

@@ -35,15 +35,17 @@ void Network::serachServer()
     foreach (QNetworkInterface i, QNetworkInterface().allInterfaces()){
         foreach (QNetworkAddressEntry ae, i.addressEntries()){
             if (ae.ip().protocol() == QAbstractSocket::IPv4Protocol && ae.ip() != QHostAddress(QHostAddress::LocalHost)){
-                QHostAddress ip = ae.ip();
-                QHostAddress nm = ae.netmask();
-                qDebug() << "Host IP: " << ip.toString();
-                qDebug() << "Netmask: " << nm.toString();
-                quint32 nip = ip.toIPv4Address() & nm.toIPv4Address();
-                qDebug() << "Network: " << QHostAddress(nip).toString();
+                QHostAddress localIp = ae.ip();
+                QHostAddress netmask = ae.netmask();
+                quint32 networkIp = localIp.toIPv4Address() & netmask.toIPv4Address();
+                quint32 addressCount = localIp.toIPv4Address() & !netmask.toIPv4Address() - 2;
+                qDebug() << "Host IP: " << localIp.toString();
+                qDebug() << "Netmask: " << netmask.toString();
+                qDebug() << "Network: " << QHostAddress(networkIp).toString();
+                qDebug() << "Possibe hosts: " << QHostAddress(addressCount).toString();
 
-                while (nip < (nip | quint32(255))){
-                    QHostAddress address = QHostAddress(nip++);
+                while (networkIp < (networkIp | addressCount)){
+                    QHostAddress address = QHostAddress(networkIp++);
 //                    if (address == ip) continue;
                     socket->connectToHost(address, 22222);
                     qDebug() << "Connect to host: " << address.toString();
