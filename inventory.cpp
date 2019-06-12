@@ -60,7 +60,7 @@ QByteArray Inventory::getInventory()
     }
     QJsonObject inventary;
     inventary.insert("rows", rowCount());
-    inventary.insert("cols", colorCount());
+    inventary.insert("cols", columnCount());
     inventary.insert("cells", cells);
     return QJsonDocument(inventary).toJson();
 }
@@ -74,6 +74,8 @@ void Inventory::setInventory(QByteArray array)
     /// создает по полученным данным новый инвентарь и заполняет его предметами
 
     clearContents();
+    setRowCount(0);
+    setColumnCount(0);
     QJsonObject inventory = QJsonDocument::fromJson(array).object();
     int rows = inventory.value("rows").toInt();
     int cols = inventory.value("cols").toInt();
@@ -108,7 +110,7 @@ void Inventory::createItem(int position, ItemType type, int count)
     /// а так же изменения изображения ячейки и проигрывания аудио
     /// в случае удаления последнего предмета
 
-    Item *apple = new Item(position);
+    Item *apple = new Item(position,type,count);
 
     connect(apple, SIGNAL(increased(int, ItemType)), this, SLOT(increaseItem(int, ItemType)));
     connect(apple, SIGNAL(decreased(int)), this, SLOT(decreaseItem(int)));
@@ -182,6 +184,8 @@ void Inventory::mergeItems(int start, int stop)
 
 void Inventory::updateItem(int position, QPair<ItemType, int> item)
 {
+    /// Обновляет значения ячейки инвентаря в позиции position
+
     items.insert(position, item);
     itemUpdated(position, item.first, item.second);
 }

@@ -24,7 +24,7 @@ private:
     QMediaPlayer *player = new QMediaPlayer;
 
 public:
-    explicit Item(int position = -1, ItemType type = None);
+    explicit Item(int position = -1, ItemType type = None, int count = 0);
 
     void setBorder();
     void setCount(int count = 0);

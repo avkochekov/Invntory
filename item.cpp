@@ -9,7 +9,7 @@
 
 #include <QDebug>
 
-Item::Item(int position, ItemType type)
+Item::Item(int position, ItemType type, int count)
 {
     /// Конструктор - создает ячейку с предметом, включающую 2 лейбла
     /// (для отображения изображения и количества предметов в пачке),
@@ -18,6 +18,9 @@ Item::Item(int position, ItemType type)
 
     setAcceptDrops(true);
     setMinimumSize(80,80);
+
+    connect(this, &Item::typeChanged, &Item::setImage);
+    connect(this, &Item::typeChanged, &Item::setAudio);
 
     countLabel = new QLabel(this);
     imageLabel = new QLabel(this);
@@ -33,10 +36,10 @@ Item::Item(int position, ItemType type)
     if (type){
         setType(type);
     }
+    if (count){
+        setCount(count);
+    }
     emit created(position, type);
-
-    connect(this, &Item::typeChanged, &Item::setImage);
-    connect(this, &Item::typeChanged, &Item::setAudio);
 }
 
 void Item::setImage()
