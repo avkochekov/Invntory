@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QDataStream>
 
 class Network : public QObject
 {
@@ -17,6 +18,7 @@ private:
     QTcpSocket *socket;
     bool socetConnected;
     QList<QTcpSocket *> socketList;
+    QDataStream incomingDataStream;
 
 signals:
     void noHostAvailable();
