@@ -36,6 +36,12 @@ MainWindow::~MainWindow()
 
 QWidget *MainWindow::getMainMenu()
 {
+    /// Возвращает виджет с кнопками "Новая игра" и "Выход"
+    /// При клике по кнопке "Новая игра" компановщик stacked
+    /// отображает следующий виджет.
+    /// При клике по кнопке "Выход" компановщик stacked
+    /// отображает следующий виджет.
+
     QWidget *w = new QWidget();
     QVBoxLayout *vBox = new QVBoxLayout;
     QPushButton *pbNewGame = new QPushButton(this);
@@ -66,15 +72,17 @@ QWidget *MainWindow::getMainMenu()
 
 QWidget *MainWindow::getConnectionMenu()
 {
+    /// Возвращает виджет с кнопками "Клиент" и "Сервер"
+    /// Здесть игрок выбирает, будет ли он сервером, либо клиентом
+    /// Если игрок выбирает клиента и подключение к серверу не произошло,
+    /// В приложении отображается виджет "Главное меню"
+    /// Если игрок выбирает клиента и успешно подключается к серверу,
+    /// или выбирает сервер, отображается виджет "Игровое поле"
     QWidget *w = new QWidget();
     QVBoxLayout *vBox = new QVBoxLayout;
     QPushButton *pbClient = new QPushButton(this);
     QPushButton *pbServer = new QPushButton(this);
     network = new Network();
-
-    connect(inventory, &Inventory::itemUpdated, [=](int position, ItemType type, int count){
-        network->sendMessage(inventory->getItem(position, type, count));
-    });
 
     connect(pbClient, &QPushButton::clicked, [=](){
         setWindowTitle("Инвентарь - Клиент");
@@ -97,6 +105,7 @@ QWidget *MainWindow::getConnectionMenu()
         inventory->createInventory(3,3);
         connect(network, &Network::connected, [=](){
             network->sendMessage(inventory->getInventory());
+            connect(network, SIGNAL(newMessage(QByteArray)), inventory, SLOT(updateItem(QByteArray)));
         });
         network->createServer();
         stacked->setCurrentIndex(2);
@@ -120,20 +129,27 @@ QWidget *MainWindow::getConnectionMenu()
 
 QWidget *MainWindow::getPlayField()
 {
+    /// Возвращает виджет с игровым полем, на котором расположены инвентарь,
+    /// источкин объектов и кнопка, возвращающая игрока в главное меню
     QWidget *w = new QWidget();
 
     QPushButton *pb = new QPushButton("Главое меню",this);
     pb->setMinimumHeight(50);
     connect(pb, &QPushButton::clicked, [=](){
         stacked->setCurrentIndex(0);
+        setWindowTitle("Инвентарь");
 //        disconnect(network, SLOT(newMessage));
 //        disconnect(network, SLOT(connected));
     });
 
 ///    Раскомментировать, есть необходима очистка инвентаря при "новой игре"
-//    connect(pb, SIGNAL(clicked()), inventory, SLOT(createInventory()));
+    connect(pb, SIGNAL(clicked()), inventory, SLOT(createInventory()));
 
     inventory = new Inventory(this);
+
+    connect(inventory, &Inventory::itemUpdated, [=](int position, ItemType type, int count){
+        network->sendMessage(inventory->getItem(position, type, count));
+    });
 
     connect(inventory, &Inventory::itemUpdated, db, &DataBase::updateItem);
     connect(inventory, &Inventory::itemCreated, db, &DataBase::insertItem);
