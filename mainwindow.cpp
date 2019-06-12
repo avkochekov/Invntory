@@ -12,8 +12,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     /// Создает основное окно программы с размерами 360x320
     /// В качестве основного компановщика используется QStackedLayout
+    /// В компановшик добавляются виджеты
+    ///     Основного меню
+    ///     Меню выбора подключения
+    ///     Виджет игрового поля
+
     ui->setupUi(this);
     setFixedSize(360,320);
+    setWindowTitle("Инвентарь");
 
     stacked = new QStackedLayout();
     stacked->addWidget(getMainMenu());
@@ -35,7 +41,10 @@ QWidget *MainWindow::getMainMenu()
     QPushButton *pbNewGame = new QPushButton(this);
     QPushButton *pbExit = new QPushButton(this);
 
-    connect(pbNewGame, &QPushButton::clicked, [=](){stacked->setCurrentIndex(1);});
+    connect(pbNewGame, &QPushButton::clicked, [=](){
+        setWindowTitle("Инвентарь - Новая игра");
+        stacked->setCurrentIndex(1);
+    });
     connect(pbExit, &QPushButton::clicked, [=](){QApplication::exit();});
 
 
@@ -63,25 +72,32 @@ QWidget *MainWindow::getConnectionMenu()
     QPushButton *pbServer = new QPushButton(this);
     network = new Network();
 
+    connect(inventory, &Inventory::itemUpdated, [=](int position, ItemType type, int count){
+        network->sendMessage(inventory->getItem(position, type, count));
+    });
+
     connect(pbClient, &QPushButton::clicked, [=](){
+        setWindowTitle("Инвентарь - Клиент");
         connect(network, &Network::newMessage, inventory, &Inventory::setInventory);
+        connect(network, &Network::connected, [=](){
+            stacked->setCurrentIndex(2);
+        });
+        connect(network, &Network::noHostAvailable, [=](){
+            stacked->setCurrentIndex(0);
+        });
         connect(inventory, &Inventory::created, [=](){
             disconnect(network, &Network::newMessage, inventory, &Inventory::setInventory);
             connect(network, SIGNAL(newMessage(QByteArray)), inventory, SLOT(updateItem(QByteArray)));
-            connect(inventory, &Inventory::itemUpdated, [=](int position, ItemType type, int count){
-                network->sendMessage(inventory->getItem(position, type, count));
-            });
         });
         network->serachServer();
-        stacked->setCurrentIndex(2);
     });
 
     connect(pbServer, &QPushButton::clicked, [=](){
+        setWindowTitle("Инвентарь - Сервер");
         inventory->createInventory(3,3);
         connect(network, &Network::connected, [=](){
             network->sendMessage(inventory->getInventory());
         });
-//        connect(inventory, &Inventory::itemUpdated, network, &Network::)
         network->createServer();
         stacked->setCurrentIndex(2);
     });
@@ -110,8 +126,8 @@ QWidget *MainWindow::getPlayField()
     pb->setMinimumHeight(50);
     connect(pb, &QPushButton::clicked, [=](){
         stacked->setCurrentIndex(0);
-        disconnect(network, SLOT(newMessage));
-        disconnect(network, SLOT(connected));
+//        disconnect(network, SLOT(newMessage));
+//        disconnect(network, SLOT(connected));
     });
 
 ///    Раскомментировать, есть необходима очистка инвентаря при "новой игре"
