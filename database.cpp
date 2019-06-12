@@ -7,6 +7,9 @@
 
 DataBase::DataBase()
 {
+    /// Подключает драйвер SQLite
+    /// Проверяет доступность БД
+
     QSqlDatabase sdb = QSqlDatabase::addDatabase("QSQLITE");
     sdb.setDatabaseName(QDir::current().path() + "/database/database.sqlite");
     if (!sdb.open()) {
@@ -18,6 +21,8 @@ DataBase::DataBase()
 
 void DataBase::createTables()
 {
+    /// Создает таблицы Инвентаря и Предмета
+
     QSqlQuery query;
     query.exec("CREATE TABLE Inventory "
                           "(`CellPosition` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
@@ -42,6 +47,8 @@ void DataBase::createTables()
 
 void DataBase::insertItem(int id, int type)
 {
+    /// Вставляет значение в таблицу Инвентаря
+
     QSqlQuery query;
     query.prepare("INSERT INTO Inventory (CellPosition, ItemType) "
                         "VALUES (:id, :type)");
@@ -52,6 +59,8 @@ void DataBase::insertItem(int id, int type)
 
 void DataBase::updateItem(int id, int type, int count)
 {
+    /// Обновляет значение таблицы Инвентаря
+
     QSqlQuery query;
     query.prepare("UPDATE Inventory "
                   "SET ItemType = :type, ItemCount = :count "
