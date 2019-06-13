@@ -49,7 +49,7 @@ QWidget *MainWindow::getMainMenu()
 
     connect(pbNewGame, &QPushButton::clicked, [=](){
         setWindowTitle("Инвентарь");
-        QMessageBox msgBox(QMessageBox::NoIcon,
+        QMessageBox msgBox(QMessageBox::Information,
                            "Новая игра",
                            "Для начала игры и создания пустого инвентаря выберите \"Сервер\".\n"
                            "Для подключения к уже существующему инвентарю выберите \"Клиент\".",
