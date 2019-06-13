@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QProcess>
 
 #include <itemtype.h>
 
@@ -11,7 +12,9 @@ DataBase::DataBase()
     /// Проверяет доступность БД
 
     QSqlDatabase sdb = QSqlDatabase::addDatabase("QSQLITE");
-    sdb.setDatabaseName(QDir::current().path() + "/database/database.sqlite");
+    QFile dbFile("database.sqlite");
+
+    sdb.setDatabaseName(dbFile.fileName());
     if (!sdb.open()) {
         qDebug() << sdb.lastError().text();
         return;
